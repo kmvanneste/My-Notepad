@@ -1,6 +1,7 @@
 var express = require("express");
 var path = require("path");
-var noteData = require("./Develop/db/db.json")
+var noteData = require("./Develop/db/db.json");
+const fs = require("fs");
 
 var app = express();
 
@@ -11,31 +12,35 @@ app.use(express.json());
 
 //HTML ROUTES
 app.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, "index.html"));
+    res.sendFile(path.join(__dirname, "./Develop/public/index.html"));
   });
 
 app.get("/notes", function(req, res) {
-    res.sendFile(path.join(__dirname, "notes.html"));
+    res.sendFile(path.join(__dirname, "./Develop/public/notes.html"));
   });
 
 // If no matching route is found default to home
 app.get("*", function(req, res) {
-    res.sendFile(path.join(__dirname, "index.html"));
+    res.sendFile(path.join(__dirname, "./Develop/public/index.html"));
   });
 
 
 //API ROUTES
 //User is shown a JSON of the data in the table
 app.get("/api/notes", function(req, res) {
-    res.json(noteData);
+    fs.readFile('db.json', function(err, data) {
+        if (err) throw err;
+        res.writeHead(200, { "Content-Type": "text/html"});
+        res.end(data);
+    })
   });
 //User submits a new note
 app.post("/api/notes", function(req, res) {
     var newNote = req.body;
-    newCharacter.routeName = newCharacter.name.replace(/\s+/g, "").toLowerCase()
-    console.log(newCharacter)
-    characters.push(newCharacter);
-    res.json(newCharacter);
+    newNote.routeName = newNote.name.replace(/\s+/g, "").toLowerCase()
+    console.log(newNote)
+    noteData.push(newNote);
+    res.json(newNote);
 });
 
 
