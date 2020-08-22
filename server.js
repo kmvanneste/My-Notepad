@@ -1,7 +1,6 @@
 const express = require("express");
 var path = require("path");
-var noteData = require("./db/db.json");
-console.log(noteData);
+//var noteData = require("./db/db.json");
 const fs = require("fs");
 
 var app = express();
@@ -18,7 +17,11 @@ console.log("dataStr", dataStr);
 let noteArray = JSON.parse(dataStr);
 console.log("noteArray", noteArray);
 
-//HTML ROUTES
+// noteArray.forEach(note) {
+//   //give unique
+// };
+
+//HTML ROUTES --------------------------------------------------------
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
@@ -26,41 +29,36 @@ app.get("/", function (req, res) {
 app.get("/notes", function (req, res) {
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
+//----------------------------------------------------------------------
 
+app.get("/api/notes/", function (req, res) {
+  console.log("getting note");
+  res.json(noteArray);
 
-app.get("/api/notes", function (req, res) {
-  res.json([{"title":"Test Title","text":"Test text"}]);
-  // read
-});
-
-//API ROUTES
-//User is shown a JSON of the data in the table
-// app.get("/api/notes", function(req, res) {
-
-//   });
-//User submits a new note
-app.post("/api/notes", function (req, res) {
-  console.log("Testing post");
-  noteArray.push(req.body);
-
-  fs.writeFile(noteData, JSON.stringify(noteArray), function (err) {
+  fs.writeFile("./db/db.json", JSON.stringify(noteArray), function (err) {
     if (err) throw err;
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(noteArray);
-  });
-
-  // var newNote = req.body;
-  // newNote.routeName = newNote.name.replace(/\s+/g, "").toLowerCase()
-  // console.log(newNote)
-  // noteData.push(newNote);
-  // res.json(newNote);
+    console.log("sucessful write");
+ });
+ 
 });
-//app.delet
+
+app.post("/api/notes", function (req, res) {
+  
+  let newNote = req.body;
+  noteArray.push(newNote);
+  res.json(noteArray);
+  console.log("saving note");
+});
+
+app.delete("/api/notes/:id", function (req, res) {
+  console.log("delete post");
+  
+})
 
 // If no matching route is found default to home
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "./public/index.html"));
-});
+// app.get("*", function (req, res) {
+//   res.sendFile(path.join(__dirname, "./public/index.html"));
+// });
 
 //START SERVER
 app.listen(PORT, function () {
