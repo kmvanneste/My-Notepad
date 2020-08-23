@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 let noteData = require("./db/db.json");
 const fs = require("fs");
-const uuid = require("uuid/v1");
+const uuid = require("uuid/v1");    
 
 const app = express();
 
@@ -11,10 +11,6 @@ const PORT = process.env.PORT || 8080;
 app.use(express.static("./public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Read db.json using fs.readFileSync and JSON.parse()
-//let dataStr = fs.readFileSync("db/db.json", "utf8");
-//let noteArray = JSON.parse(dataStr);
 
 //HTML ROUTES --------------------------------------------------------
 app.get("/", function (req, res) {
