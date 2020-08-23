@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-let noteData = require("./db/db.json");
+//const noteData = require("./db/db.json");
 const fs = require("fs");
 const uuid = require("uuid/v1");
 
@@ -13,8 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Read db.json using fs.readFileSync and JSON.parse()
-//let dataStr = fs.readFileSync("db/db.json", "utf8");
-//let noteArray = JSON.parse(dataStr);
+let dataStr = fs.readFileSync("db/db.json", "utf8");
+let noteArray = JSON.parse(dataStr);
 
 //HTML ROUTES --------------------------------------------------------
 app.get("/", function (req, res) {
@@ -28,7 +28,7 @@ app.get("/notes", function (req, res) {
 
 app.get("/api/notes/", function (req, res) {
   console.log("getting note");
-  res.json(noteData);
+  res.json(noteArray);
 });
 
 app.post("/api/notes", function (req, res) {
@@ -38,11 +38,11 @@ app.post("/api/notes", function (req, res) {
   let newNote = { title, text, id:uuid() };
 
   console.log(newNote);
-  noteData.push(newNote);
-  res.json(noteData);
+  noteArray.push(newNote);
+  res.json(noteArray);
   console.log("saving note");
 
-  fs.writeFile("./db/db.json", JSON.stringify(noteData), function (err) {
+  fs.writeFile("./db/db.json", JSON.stringify(noteArray), function (err) {
     if (err) throw err;
     console.log("sucessful write");
   });
@@ -50,16 +50,19 @@ app.post("/api/notes", function (req, res) {
 
 app.delete("/api/notes/:id", function (req, res) {
   let id = req.params.id;
-  let deleteNote = noteData.filter((note) => note.id !== id);
-  console.log(deleteNote);
-  fs.writeFile("./db/db.json", JSON.stringify(deleteNote), function (err) {
+  let notes = noteArray;
+  console.log(notes);
+  let filteredNotes = noteArray.filter((note) => note.id !== id);
+  console.log(filteredNotes);
+  fs.writeFile("./db/db.json", JSON.stringify(filteredNotes), function (err) {
     if (err) throw err;
     console.log("sucessful delete");
   });
-  noteData = deleteNote;
-  res.json(deleteNote);
+  window.location.reload();
+  //console.log(noteArray);
   console.log("delete post"); 
 })
+
 // If no matching route is found default to home
 // app.get("*", function (req, res) {
 //   res.sendFile(path.join(__dirname, "./public/index.html"));
